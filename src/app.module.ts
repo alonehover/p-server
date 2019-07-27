@@ -6,10 +6,12 @@ import { AppService } from './app.service';
 
 import { TaskModule } from './todo/task/task.module';
 
+import { Task } from './todo/task/task.entity';
+
 @Module({
   imports: [
-    TaskModule,
     TypeOrmModule.forRoot(),
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

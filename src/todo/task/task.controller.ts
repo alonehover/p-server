@@ -1,11 +1,15 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { TaskService } from './task.service';
+import { Task } from './task.entity';
 
 @Controller('todo')
 export class TaskController {
+  constructor(private readonly taskService: TaskService) {}
 
   @Get()
-  findAllTask(): string {
-    return 'task api';
+  findAllTask(): Promise<Task[]> {
+    return this.taskService.findAll();
+    // return new Promise(() => 'asdasda');
   }
 
   @Post()
