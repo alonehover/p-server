@@ -5,13 +5,13 @@ export class Task {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 50 })
+    @Column({ length: 50, default: null })
     name: string;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: null })
     startTime: Timestamp;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: null })
     endTime: Timestamp;
 
     @Column({ type: 'timestamp', default: () => 'current_timestamp' })
