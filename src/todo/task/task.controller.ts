@@ -2,31 +2,30 @@ import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
 import { TaskService } from './task.service';
 import { Task } from './task.entity';
 
-@Controller('todo')
+@Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Get()
   findAllTask(): Promise<Task[]> {
     return this.taskService.findAll();
-    // return new Promise(() => 'asdasda');
   }
 
   @Post()
-  createTask(@Body() data: any): object {
-    return {
-      code: 1,
-      data,
-    };
+  createTask(@Body() data: Task): Promise<Task> {
+    const res = this.taskService.create(data);
+    return res;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: any) {
-    return `This action updates a #${id} task`;
+  update(@Param('id') id: number, @Body() data: Task) {
+    const updateStatus = this.taskService.update(id, data);
+    return updateStatus;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return `This action removes a #${id} task`;
+  remove(@Param('id') id: number) {
+    // return `This action removes a #${id} task`;
+    return this.taskService.deleteOne(id);
   }
 }

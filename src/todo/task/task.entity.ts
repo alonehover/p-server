@@ -8,11 +8,14 @@ export class Task {
     @Column({ length: 50 })
     name: string;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: null })
     startTime: Timestamp;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: null })
     endTime: Timestamp;
+
+    @Column({ default: 1 })
+    status: number;
 
     @Column({ type: 'timestamp', default: () => 'current_timestamp' })
     createdTime: Timestamp;
