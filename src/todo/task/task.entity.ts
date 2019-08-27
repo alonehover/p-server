@@ -5,7 +5,7 @@ export class Task {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 50 })
+    @Column({ length: 50, default: null })
     name: string;
 
     @Column({ type: 'timestamp', default: null })
