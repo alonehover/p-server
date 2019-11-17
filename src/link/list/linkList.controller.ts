@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as request from 'request';
+import * as superagent from 'superagent';
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { LinkListService } from './linkList.service';
 import { LinkList } from './linkList.entity';
@@ -8,66 +8,79 @@ import { identifier } from '@babel/types';
 
 @Controller('link')
 export class LinkListController {
-  constructor(private readonly linkListService: LinkListService) {}
+    constructor(private readonly linkListService: LinkListService) { }
 
-  // 获取列表
-  @Get()
-  findAllTask(): Promise<LinkList[]> {
-    return this.linkListService.findAll({
-      url: 'https://www.baidu.com'
-    });
-  }
-
-  // 创建新链接
-  @Post()
-  createTask(@Body() data: LinkList): any {
-    if(!data.url) {
-      return null;
+    // 获取列表
+    @Get()
+    findAllTask(): Promise<LinkList[]> {
+        return this.linkListService.findAll();
     }
 
-    const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
+    // 创建新链接
+    @Post()
+    async createTask(@Body() data: LinkList): Promise<any> {
+        if (!data.url) {
+            return null;
+        }
 
-    const hostName = hostReg.exec(data.url)[0];
-    const iconOriginUrl = hostName + '/favicon.ico';
-    
-    const fileName = hostName.replace(/https?:\/\//, '').replace(/\./g, '_') + '.png';
-    const filePrefix = 'icon';
-    const imgSavePath = path.join(process.cwd(), '/public/img', filePrefix);
+        const isExist = await this.linkListService.checkExsit({
+          title: data.title,
+          url: data.url
+        });
 
-    if(!fs.existsSync(imgSavePath)) {
-      fs.mkdirSync(imgSavePath);
+        if(isExist) {
+          return { code: -1, data: null, msg: '数据已存在' };
+        }
+
+        const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
+
+        const hostName = hostReg.exec(data.url)[0];
+        const iconOriginUrl = hostName + '/favicon.png';
+
+        const fileName = hostName.replace(/https?:\/\//, '').replace(/\./g, '_') + '.ico';
+        const filePrefix = 'icon';
+        const imgSavePath = path.join(process.cwd(), '/public/img', filePrefix);
+
+        if (!fs.existsSync(imgSavePath)) {
+            fs.mkdirSync(imgSavePath);
+        }
+
+        const fileLocalPath = path.join(imgSavePath, fileName);
+
+        let icon = '';
+        console.log('fetch icon : ' + iconOriginUrl);
+
+        // 获取网站的favicon.ico
+        await superagent.get(iconOriginUrl)
+            .timeout({
+                response: 3000
+            }).then(res => {
+                if (200 === res.status) {
+                    superagent.get(iconOriginUrl)
+                        .pipe(fs.createWriteStream(fileLocalPath));
+
+                    icon = filePrefix + '/' + fileName;
+                }
+            }).catch(err => {
+                console.error(err);
+            });
+
+        data.icon = icon;
+        const res = this.linkListService.create(data);
+
+        return res;
     }
 
-    const fileLocalPath = path.join(imgSavePath, fileName);
+    // 修改链接
+    @Put(':id')
+    update(@Param('id') id: number, @Body() data: LinkList) {
+        const updateStatus = this.linkListService.update(id, data);
+        return updateStatus;
+    }
 
-    let icon = '';
-
-    // 获取网站的favicon.ico
-    request(iconOriginUrl, (err, res) => {
-      if(res.statusCode == 200) {
-        console.log(iconOriginUrl, fileLocalPath);
-        
-        res.pipe(fs.createWriteStream(fileLocalPath));
-        icon = filePrefix + '/' + fileName;
-      }
-    });
-    
-    data.icon = icon;
-    const res = this.linkListService.create(data);
-
-    return res;
-  }
-
-  // 修改链接
-  @Put(':id')
-  update(@Param('id') id: number, @Body() data: LinkList) {
-    const updateStatus = this.linkListService.update(id, data);
-    return updateStatus;
-  }
-
-  // 删除链接
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.linkListService.deleteOne(id);
-  }
+    // 删除链接
+    @Delete(':id')
+    remove(@Param('id') id: number) {
+        return this.linkListService.deleteOne(id);
+    }
 }

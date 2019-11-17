@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { LinkList } from './linkList.entity';
 
 @Injectable()
@@ -16,6 +16,26 @@ export class LinkListService {
 
     async findAndCount(option: any = {}): Promise<[LinkList[], number]> {
         return await this.linkListRepository.findAndCount(option);
+    }
+
+    async findQuery(option: any = {}): Promise<LinkList[]> {
+        return await this.linkListRepository.find({
+            where: [{ 
+                title: option.title
+            }, {
+                url: Like(`%${option.url}%`)
+            }]
+        });
+    }
+
+    async checkExsit(option: any = {}): Promise<boolean> {
+        const list = await this.findQuery(option);
+        
+        if(list.length) {
+            return true;
+        }
+
+        return false;
     }
 
     async findOne(id: number): Promise<LinkList> {
