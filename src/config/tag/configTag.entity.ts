@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, Timestamp } from 'typeorm';
 
 @Entity()
-export class ConfigList {
+export class ConfigTag {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -10,6 +10,9 @@ export class ConfigList {
 
     @Column({ length: 255, default: null })
     value: string;
+
+    @Column({ length: 100, default: null })
+    tagIds: string;
 
     @Column({ default: 1 })
     status: number;

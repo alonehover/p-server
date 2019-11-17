@@ -1,30 +1,30 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { TaskService } from './configList.service';
-import { Task } from './configList.entity';
+import { ConfigListService } from './configList.service';
+import { ConfigList } from './configList.entity';
 
-@Controller('task')
-export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+@Controller('config')
+export class ConfigListController {
+  constructor(private readonly configListService: ConfigListService) {}
 
   @Get()
-  findAllTask(): Promise<Task[]> {
-    return this.taskService.findAll();
+  findAllConfigList(): Promise<ConfigList[]> {
+    return this.configListService.findAll();
   }
 
   @Post()
-  createTask(@Body() data: Task): Promise<Task> {
-    const res = this.taskService.create(data);
+  createConfigList(@Body() data: ConfigList): Promise<ConfigList> {
+    const res = this.configListService.create(data);
     return res;
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() data: Task) {
-    const updateStatus = this.taskService.update(id, data);
+  update(@Param('id') id: number, @Body() data: ConfigList) {
+    const updateStatus = this.configListService.update(id, data);
     return updateStatus;
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.taskService.deleteOne(id);
+    return this.configListService.deleteOne(id);
   }
 }
