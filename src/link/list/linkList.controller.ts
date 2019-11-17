@@ -4,7 +4,6 @@ import * as superagent from 'superagent';
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { LinkListService } from './linkList.service';
 import { LinkList } from './linkList.entity';
-import { identifier } from '@babel/types';
 
 @Controller('link')
 export class LinkListController {
@@ -23,23 +22,30 @@ export class LinkListController {
             return null;
         }
 
+        const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
+        // 添加的链接域名
+        const hostName = hostReg.exec(data.url)[0];
+        // 待抓取图片路径
+        const iconOriginUrl = hostName + '/favicon.ico';
+        // 图片存储路径前缀
+        const filePathPrefix = 'icon';
+        // 图片存储后缀
+        const fileExt = '.png';
+        // 图片名 以域名命名
+        const fileName = hostName.replace(/https?:\/\//, '').replace(/\./g, '_') + fileExt;
+        // 图片存储绝对路径
+        const imgSavePath = path.join(process.cwd(), '/public/img', filePathPrefix);
+
+        // 判断是否存在同名或者相同域名链接
         const isExist = await this.linkListService.checkExsit({
           title: data.title,
-          url: data.url
+          url: hostName
         });
 
         if(isExist) {
           return { code: -1, data: null, msg: '数据已存在' };
         }
 
-        const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
-
-        const hostName = hostReg.exec(data.url)[0];
-        const iconOriginUrl = hostName + '/favicon.png';
-
-        const fileName = hostName.replace(/https?:\/\//, '').replace(/\./g, '_') + '.ico';
-        const filePrefix = 'icon';
-        const imgSavePath = path.join(process.cwd(), '/public/img', filePrefix);
 
         if (!fs.existsSync(imgSavePath)) {
             fs.mkdirSync(imgSavePath);
@@ -53,13 +59,14 @@ export class LinkListController {
         // 获取网站的favicon.ico
         await superagent.get(iconOriginUrl)
             .timeout({
-                response: 3000
+                response: 5000
             }).then(res => {
                 if (200 === res.status) {
+                    // favicon.ico地址存在, 抓取图片存储本地
                     superagent.get(iconOriginUrl)
                         .pipe(fs.createWriteStream(fileLocalPath));
 
-                    icon = filePrefix + '/' + fileName;
+                    icon = filePathPrefix + '/' + fileName;
                 }
             }).catch(err => {
                 console.error(err);
