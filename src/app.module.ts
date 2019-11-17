@@ -4,14 +4,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { TaskModule } from './todo/task/task.module';
+import { TodoListModule } from './todo/list/todoList.module';
+import { LinkListModule } from './link/list/linkList.module';
+import { LinkTagModule } from './link/tag/linkTag.module';
 
-import { Task } from './todo/task/task.entity';
+import { TodoList } from './todo/list/todoList.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    TaskModule,
+    TodoListModule,
+    LinkListModule,
+    LinkTagModule
   ],
   controllers: [AppController],
   providers: [AppService],

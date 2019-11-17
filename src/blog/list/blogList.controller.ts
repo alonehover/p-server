@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { Task } from './task.entity';
+import { TaskService } from './blogList.service';
+import { Task } from './blogList.entity';
 
 @Controller('task')
 export class TaskController {
@@ -25,7 +25,6 @@ export class TaskController {
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    // return `This action removes a #${id} task`;
     return this.taskService.deleteOne(id);
   }
 }
