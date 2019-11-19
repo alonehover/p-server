@@ -19,14 +19,14 @@ export class LinkTag {
     status: number;
 
     @Column({ type: 'timestamp', default: () => 'current_timestamp' })
-    created_time: Timestamp;
+    createdTime: Timestamp;
 
     @Column({
         type: 'timestamp',
         onUpdate: 'current_timestamp',
         default: () => 'current_timestamp',
     })
-    updated_time: Timestamp;
+    updatedTime: Timestamp;
 
     @OneToMany(type => LinkList, link => link.tag)
     links: LinkList;

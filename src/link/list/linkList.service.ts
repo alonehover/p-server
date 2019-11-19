@@ -12,20 +12,23 @@ export class LinkListService {
 
     async findQuery(option: any = {}): Promise<LinkList[]> {
         return await this.linkListRepository.find({
+            where: { 
+                ...option,
+                status: 1
+            }
+        });
+    }
+
+    async checkExsit(option: any = {}): Promise<boolean> {
+        const list = await this.linkListRepository.find({
             where: [{
                 title: option.title,
                 status: 1
             }, {
                 url: Like(`%${option.host}%`),
                 status: 1
-            }, {
-                status: 1
             }]
         });
-    }
-
-    async checkExsit(option: any = {}): Promise<boolean> {
-        const list = await this.findQuery(option);
         
         if(list.length) {
             return true;
@@ -38,24 +41,24 @@ export class LinkListService {
         return await this.linkListRepository.findOneOrFail(id);
     }
 
-    // create a new todo
+    // create
     async create(task: LinkList): Promise<LinkList> {
         const res = this.linkListRepository.create(task);
         const result = this.linkListRepository.save(res);
         return result;
     }
 
-    // update a todo
+    // update
     async update(id: number, task: LinkList): Promise<boolean> {
         return this.linkListRepository.update(id, task).then(res => res.raw.affectedRows > 0);
     }
 
-    // delete a todo
+    // delete one
     async deleteOne(id: number) {
         return this.linkListRepository.delete(id).then(res => res.raw.affectedRows > 0);
     }
 
-    // delete multipe todo
+    // delete multipe
     async delete(ids: number[]) {
         return this.linkListRepository.delete(ids).then(res => res.raw.affectedRows > 0);
     }

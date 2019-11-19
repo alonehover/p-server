@@ -18,6 +18,7 @@ export class LinkList {
     @Column({ length: 100, default: null })
     icon: string;
 
+    // 会创建一个tagId的外键关联link_tag表的id
     @ManyToOne(type => LinkTag, tag => tag.links)
     tag: LinkTag;
 
@@ -28,12 +29,12 @@ export class LinkList {
     status: number;
 
     @Column({ type: 'timestamp', default: () => 'current_timestamp' })
-    created_time: Timestamp;
+    createdTime: Timestamp;
 
     @Column({
         type: 'timestamp',
         onUpdate: 'current_timestamp',
         default: () => 'current_timestamp',
     })
-    updated_time: Timestamp;
+    updatedTime: Timestamp;
 }

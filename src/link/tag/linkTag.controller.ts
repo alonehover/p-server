@@ -25,13 +25,13 @@ export class LinkTagController {
     async createLinkTag(@Body() data: LinkTag): Promise<any> {
 
         // 判断是否存在同名
-        // const isExist = await this.linkTagService.checkExsit({
-        //     name: data.name
-        // });
+        const isExist = await this.linkTagService.checkExsit({
+            name: data.name
+        });
 
-        // if (isExist) {
-        //     return { code: -1, data: null, msg: '数据已存在' };
-        // }
+        if (isExist) {
+            return { code: -1, data: null, msg: '数据已存在' };
+        }
 
         const res = this.linkTagService.create(data);
         return res;
@@ -39,12 +39,20 @@ export class LinkTagController {
 
     @Put('/tag/:id')
     update(@Param('id') id: number, @Body() data: LinkTag) {
+        if(!id) {
+            return false;
+        }
+        
         const updateStatus = this.linkTagService.update(id, data);
         return updateStatus;
     }
 
     @Delete('/tag/:id')
     remove(@Param('id') id: number) {
+        if(!id) {
+            return false;
+        }
+
         return this.linkTagService.deleteOne(id);
     }
 }

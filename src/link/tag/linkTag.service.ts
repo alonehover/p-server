@@ -12,31 +12,46 @@ export class LinkTagService {
 
     async findAll(option: any = {}): Promise<LinkTag[]> {
         return await this.linkTagRepository.find({
-            select: ['id', 'name', 'sort', 'updated_time'],
+            select: ['id', 'name', 'sort', 'updatedTime'],
             where: {
                 ...option,
                 status: 1
             },
-            order: { sort: 'DESC', updated_time: 'DESC' }
+            order: { sort: 'DESC', updatedTime: 'DESC' }
         });
     }
 
+    // 简单的关联查询
+    // async findQuery(option: any = {}): Promise<any> {
+    //     const res = await this.linkTagRepository
+    //         .createQueryBuilder('tag')
+    //         .leftJoin(LinkList, 'links', 'links.tag_id = tag.id')
+    //         .where('tag.status = 1')
+    //         .andWhere('links.status = 1')
+    //         .orderBy('links.click', 'DESC')
+    //         .addOrderBy('tag.sort', 'DESC')
+    //         .select(['tag.name as name', 'links.title', 'links.url', 'links.icon'])
+    //         .getRawMany();
+    //     return res;
+    // }
+
+    // 利用entity关联查询
     async findQuery(option: any = {}): Promise<any[]> {
         const res = await this.linkTagRepository
             .createQueryBuilder('tag')
-            .select(['tag.name', 'links.title', 'links.url', 'links.icon'])
             .leftJoin('tag.links', 'links')
             .where('tag.status = 1')
             .andWhere('links.status = 1')
             .orderBy('links.click', 'DESC')
             .addOrderBy('tag.sort', 'DESC')
+            .select(['tag.name', 'links.title', 'links.url', 'links.icon', 'links.click'])
             .getMany();
         return res;
     }
 
     async findOne(id: number): Promise<LinkTag> {
         return await this.linkTagRepository.findOne(id, {
-            select: ['id', 'name', 'sort', 'updated_time'],
+            select: ['id', 'name', 'sort', 'updatedTime'],
             where: { status: 1 }
         });
     } 
