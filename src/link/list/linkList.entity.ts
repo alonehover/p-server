@@ -1,4 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, Timestamp } from 'typeorm';
+import { 
+    Entity, PrimaryGeneratedColumn, Column, Timestamp,
+    ManyToOne, 
+} from 'typeorm';
+import { LinkTag } from '../tag/linkTag.entity';
 
 @Entity()
 export class LinkList {
@@ -14,8 +18,8 @@ export class LinkList {
     @Column({ length: 100, default: null })
     icon: string;
 
-    @Column({ default: null })
-    tagid: number;
+    @ManyToOne(type => LinkTag, tag => tag.links)
+    tag: LinkTag;
 
     @Column({ default: 0 })
     click: number;
@@ -24,12 +28,12 @@ export class LinkList {
     status: number;
 
     @Column({ type: 'timestamp', default: () => 'current_timestamp' })
-    createdTime: Timestamp;
+    created_time: Timestamp;
 
     @Column({
         type: 'timestamp',
         onUpdate: 'current_timestamp',
         default: () => 'current_timestamp',
     })
-    updatedTime: Timestamp;
+    updated_time: Timestamp;
 }

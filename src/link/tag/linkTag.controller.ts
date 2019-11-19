@@ -2,29 +2,49 @@ import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
 import { LinkTagService } from './linkTag.service';
 import { LinkTag } from './linkTag.entity';
 
-@Controller('link/tag')
+@Controller('link')
 export class LinkTagController {
-  constructor(private readonly linkTagService: LinkTagService) {}
+    constructor(private readonly linkTagService: LinkTagService) { }
 
-  @Get()
-  findAllLinkTag(): Promise<LinkTag[]> {
-    return this.linkTagService.findAll();
-  }
+    @Get()
+    findAllLinkGroupTag(): Promise<LinkTag[]> {
+        return this.linkTagService.findQuery();
+    }
 
-  @Post()
-  createLinkTag(@Body() data: LinkTag): Promise<LinkTag> {
-    const res = this.linkTagService.create(data);
-    return res;
-  }
+    @Get('/tag')
+    findAllLinkTag(): Promise<LinkTag[]> {
+        return this.linkTagService.findAll();
+    }
 
-  @Put(':id')
-  update(@Param('id') id: number, @Body() data: LinkTag) {
-    const updateStatus = this.linkTagService.update(id, data);
-    return updateStatus;
-  }
+    @Get('/tag/:id')
+    findOneLinkTag(@Param('id') id: number): Promise<LinkTag> {
+        return this.linkTagService.findOne(id);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.linkTagService.deleteOne(id);
-  }
+    @Post('/tag')
+    async createLinkTag(@Body() data: LinkTag): Promise<any> {
+
+        // 判断是否存在同名
+        // const isExist = await this.linkTagService.checkExsit({
+        //     name: data.name
+        // });
+
+        // if (isExist) {
+        //     return { code: -1, data: null, msg: '数据已存在' };
+        // }
+
+        const res = this.linkTagService.create(data);
+        return res;
+    }
+
+    @Put('/tag/:id')
+    update(@Param('id') id: number, @Body() data: LinkTag) {
+        const updateStatus = this.linkTagService.update(id, data);
+        return updateStatus;
+    }
+
+    @Delete('/tag/:id')
+    remove(@Param('id') id: number) {
+        return this.linkTagService.deleteOne(id);
+    }
 }

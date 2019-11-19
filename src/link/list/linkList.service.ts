@@ -10,20 +10,16 @@ export class LinkListService {
         private readonly linkListRepository: Repository<LinkList>,
     ) {}
 
-    async findAll(option: any = {}): Promise<LinkList[]> {
-        return await this.linkListRepository.find(option);
-    }
-
-    async findAndCount(option: any = {}): Promise<[LinkList[], number]> {
-        return await this.linkListRepository.findAndCount(option);
-    }
-
     async findQuery(option: any = {}): Promise<LinkList[]> {
         return await this.linkListRepository.find({
-            where: [{ 
-                title: option.title
+            where: [{
+                title: option.title,
+                status: 1
             }, {
-                url: Like(`%${option.url}%`)
+                url: Like(`%${option.host}%`),
+                status: 1
+            }, {
+                status: 1
             }]
         });
     }
@@ -56,11 +52,11 @@ export class LinkListService {
 
     // delete a todo
     async deleteOne(id: number) {
-        return this.linkListRepository.delete(id);
+        return this.linkListRepository.delete(id).then(res => res.raw.affectedRows > 0);
     }
 
     // delete multipe todo
     async delete(ids: number[]) {
-        return this.linkListRepository.delete(ids);
+        return this.linkListRepository.delete(ids).then(res => res.raw.affectedRows > 0);
     }
 }
