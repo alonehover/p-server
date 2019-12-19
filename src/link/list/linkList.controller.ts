@@ -60,7 +60,7 @@ export class LinkListController  {
     }
 
     // 创建新链接
-    @Post()
+    @Post('/create')
     async createLink(@Body() data: LinkList): Promise<object> {
         if (!data.url) {
             return null;
@@ -87,7 +87,7 @@ export class LinkListController  {
     }
 
     // 修改链接
-    @Put(':id')
+    @Put('/edit/:id')
    async update(@Param('id') id: number, @Body() data: LinkList): Promise<boolean> {
         if(!id) {
             return false;
@@ -102,7 +102,7 @@ export class LinkListController  {
     }
 
     // 删除链接
-    @Delete(':id')
+    @Delete('/del/:id')
     remove(@Param('id') id: number) {
         if(!id) {
             return false;

@@ -21,7 +21,7 @@ export class LinkTagController {
         return this.linkTagService.findOne(id);
     }
 
-    @Post('/tag')
+    @Post('/tag/create')
     async createLinkTag(@Body() data: LinkTag): Promise<any> {
 
         // 判断是否存在同名
@@ -37,7 +37,7 @@ export class LinkTagController {
         return res;
     }
 
-    @Put('/tag/:id')
+    @Put('/tag/edit/:id')
     update(@Param('id') id: number, @Body() data: LinkTag) {
         if(!id) {
             return false;
@@ -47,7 +47,7 @@ export class LinkTagController {
         return updateStatus;
     }
 
-    @Delete('/tag/:id')
+    @Delete('/tag/del/:id')
     remove(@Param('id') id: number) {
         if(!id) {
             return false;
