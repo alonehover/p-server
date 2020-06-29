@@ -14,6 +14,9 @@ export class LinkList {
 
     @Column({ length: 255, default: null })
     url: string;
+
+    @Column({ length: 100, default: null })
+    host: string;
     
     @Column({ length: 100, default: null })
     icon: string;

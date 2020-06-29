@@ -15,12 +15,21 @@ export class LinkListController  {
         return this.linkListService.findQuery();
     }
 
+    // 获取链接host
+    getHostName(url: string): string {
+        if(!url) {
+            return null;
+        }
+
+        const hostReg = /^(http(s)?:)?\/\/[\w-.]+(:\d+)?/i;
+        return hostReg.exec(url)[0];
+    }
+
     // 抓取icon
     async fetchOriginIcon(url: string): Promise<string> {
         let icon = '';
-        const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
         // 添加的链接域名
-        const hostName = hostReg.exec(url)[0];
+        const hostName = this.getHostName(url);
         // 待抓取图片路径
         const iconOriginUrl = hostName + '/favicon.ico';
         // 图片存储路径前缀
@@ -33,10 +42,14 @@ export class LinkListController  {
         const imgSavePath = path.join(process.cwd(), '/public/img', filePathPrefix);
 
         if (!fs.existsSync(imgSavePath)) {
-            fs.mkdirSync(imgSavePath);
+            fs.mkdirSync(imgSavePath, { recursive: true });
         }
 
         const fileLocalPath = path.join(imgSavePath, fileName);
+
+        if(fs.existsSync(fileLocalPath)) {
+            return filePathPrefix + '/' + fileName;
+        }
 
         console.log('fetch icon : ' + iconOriginUrl);
 
@@ -62,41 +75,54 @@ export class LinkListController  {
     // 创建新链接
     @Post('/create')
     async createLink(@Body() data: LinkList): Promise<object> {
-        if (!data.url) {
+        if (!data && !data.url) {
             return null;
         }
 
-        const hostReg = /^http(s)?:\/\/[\w-.]+(:\d+)?/i;
+        const title = data.title || '待定义';
+        let url = data.url;
+
+        if(!/^(http(s)?:)?\/\//.test(url)) {
+            url = 'https://' + url;
+        }
+
         // 添加的链接域名
-        const hostName = hostReg.exec(data.url)[0];
+        const hostName = this.getHostName(url);
 
         // 判断是否存在同名或者相同域名链接
         const isExist = await this.linkListService.checkExsit({
-          title: data.title,
-          host: hostName
+            title: title,
+            url: url
         });
 
         if(isExist) {
           return { code: -1, data: null, msg: '数据已存在' };
         }
 
-        data.icon = await this.fetchOriginIcon(data.url);
-        const res = this.linkListService.create(data);
+        data.icon = await this.fetchOriginIcon(hostName);
+        data.url = url;
+        data.host = hostName;
 
-        return res;
+        return this.linkListService.create(data);
     }
 
     // 修改链接
     @Put('/edit/:id')
    async update(@Param('id') id: number, @Body() data: LinkList): Promise<boolean> {
-        if(!id) {
+        if(!id && !data) {
             return false;
         }
 
-        if(data.url) {
+        if (data.url) {
+            if(!/^(http(s)?:)?\/\//.test(data.url)) {
+                data.url = 'https://' + data.url;
+            }
+    
             data.icon = await this.fetchOriginIcon(data.url);
+            data.host = this.getHostName(data.url);
         }
 
+        console.log(data);
         const updateStatus = this.linkListService.update(id, data);
         return updateStatus;
     }

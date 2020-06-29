@@ -25,7 +25,7 @@ export class LinkListService {
                 title: option.title,
                 status: 1
             }, {
-                url: Like(`%${option.host}%`),
+                url: Like(`%${option.url}%`),
                 status: 1
             }]
         });
@@ -42,15 +42,15 @@ export class LinkListService {
     }
 
     // create
-    async create(task: LinkList): Promise<LinkList> {
-        const res = this.linkListRepository.create(task);
+    async create(link: LinkList): Promise<LinkList> {
+        const res = this.linkListRepository.create(link);
         const result = this.linkListRepository.save(res);
         return result;
     }
 
     // update
-    async update(id: number, task: LinkList): Promise<boolean> {
-        return this.linkListRepository.update(id, task).then(res => res.raw.affectedRows > 0);
+    async update(id: number, link: LinkList): Promise<boolean> {
+        return this.linkListRepository.update(id, link).then(res => res.raw.affectedRows > 0);
     }
 
     // delete one
