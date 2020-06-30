@@ -16,13 +16,19 @@ export class LinkListController  {
     }
 
     // 获取链接host
-    getHostName(url: string): string {
+    getHostName(url: string): any {
         if(!url) {
             return null;
         }
 
-        const hostReg = /^(http(s)?:)?\/\/[\w-.]+(:\d+)?/i;
-        return hostReg.exec(url)[0];
+        const hostReg = /^https?:\/\/([\w-.]+(:\d+)?)/i;
+        console.log(hostReg.exec(url));
+        const regRes = hostReg.exec(url);
+        // const origin = //i;
+        return {
+            origin: regRes[0],
+            hostname: regRes[1]
+        };
     }
 
     // 抓取icon
@@ -72,6 +78,38 @@ export class LinkListController  {
         return icon;
     }
 
+    // 获取网站的title
+    @Post('/title')
+    async fetchOriginTitle(@Body() data: any): Promise<string> {
+        const url = data.url;
+
+        console.log(url);
+        if(!url) {
+            return '';
+        }
+        const headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36'
+        }
+
+        let title = '';
+
+        // 获取网站的title
+        await superagent.get(url)
+            .set(headers)
+            .timeout({
+                response: 5000
+            }).then(res => {
+                if (200 === res.status) {
+                    const htmlTitle = res.text.match(/<title.*>(.+)?<\/title>/i);
+                    title = htmlTitle ? htmlTitle[1] : '';
+                }
+            }).catch(err => {
+                console.error(err);
+            });
+
+        return title;
+    }
+
     // 创建新链接
     @Post('/create')
     async createLink(@Body() data: LinkList): Promise<object> {
@@ -89,6 +127,11 @@ export class LinkListController  {
         // 添加的链接域名
         const hostName = this.getHostName(url);
 
+        data.title = await this.fetchOriginTitle(url);
+        data.icon = hostName.origin + '/favicon.ico';
+        data.url = url;
+        data.host = hostName.hostname;
+
         // 判断是否存在同名或者相同域名链接
         const isExist = await this.linkListService.checkExsit({
             title: title,
@@ -98,10 +141,6 @@ export class LinkListController  {
         if(isExist) {
           return { code: -1, data: null, msg: '数据已存在' };
         }
-
-        data.icon = await this.fetchOriginIcon(hostName);
-        data.url = url;
-        data.host = hostName;
 
         return this.linkListService.create(data);
     }
@@ -118,7 +157,7 @@ export class LinkListController  {
                 data.url = 'https://' + data.url;
             }
     
-            data.icon = await this.fetchOriginIcon(data.url);
+            // data.icon = await this.fetchOriginIcon(data.url);
             data.host = this.getHostName(data.url);
         }
 
