@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { TodoListModule } from './todo/list/todoList.module';
-import { LinkListModule } from './link/list/linkList.module';
-import { LinkTagModule } from './link/tag/linkTag.module';
+import { TodoListModule } from './app/todo/list/todoList.module';
+import { LinkListModule } from './app/link/list/linkList.module';
+import { LinkTagModule } from './app/link/tag/linkTag.module';
 
-import { TodoList } from './todo/list/todoList.entity';
+import { TodoList } from './app/todo/list/todoList.entity';
 
 @Module({
   imports: [
