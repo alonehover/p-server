@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisModule} from 'nestjs-redis'
+
+import DBConfig from '../config/DB.config'
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +15,7 @@ import { TodoList } from './app/todo/list/todoList.entity';
 
 @Module({
   imports: [
+    RedisModule.register(DBConfig.redis),
     TypeOrmModule.forRoot(),
     TodoListModule,
     LinkListModule,
