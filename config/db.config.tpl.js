@@ -10,8 +10,9 @@ export default {
         "synchronize": true
     },
     redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
+        name: 'pserver',
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: parseInt(process.env.REDIS_PORT) || 6379,
         db: parseInt(process.env.REDIS_DB),
         password: process.env.REDIS_PASSWORD,
         keyPrefix: process.env.REDIS_PRIFIX,

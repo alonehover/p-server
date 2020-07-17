@@ -34,7 +34,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 ormconfig.json
-config/*.config.ts
+config/*.config.js
 
 package-lock.json
 
