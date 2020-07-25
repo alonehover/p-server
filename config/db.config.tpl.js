@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     mysql: {
         "type": "mysql",
         "host": "localhost",
