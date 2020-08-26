@@ -11,6 +11,7 @@ import { LinkListModule } from './app/link/list/linkList.module';
 import { LinkTagModule } from './app/link/tag/linkTag.module';
 
 import { PasteModule } from './app/paste/paste.module';
+import { TranslateModule } from './app/translate/translate.module';
 
 // import { TodoList } from './app/todo/list/todoList.entity';
 const DBConfig = require('../config/db.config')
@@ -22,7 +23,8 @@ const DBConfig = require('../config/db.config')
     TodoListModule,
     LinkListModule,
     LinkTagModule,
-    PasteModule
+    PasteModule,
+    TranslateModule
   ],
   controllers: [AppController],
   providers: [AppService],
