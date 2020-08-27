@@ -28,15 +28,17 @@ export class TranslateService {
             data: ""
         };
     }
+    const youdao = await this.youdao(queryWords);
+    const baidu = await this.baidu(queryWords);
+    const sougou = await this.sougou(queryWords);
+    const iciba = await this.iciba(queryWords);
 
-    console.log(queryWords)
-
-    const data = {
-        y: await this.youdao(queryWords),            
-        b: await this.baidu(queryWords),
-        s: await this.sougou(queryWords),
-        i: await this.iciba(queryWords)
-    };
+    const data = [
+        {name: '有道', key: 'youdao', data: youdao},
+        {name: '搜狗', key: 'sougou', data: sougou},
+        {name: '百度', key: 'baidu', data: baidu},
+        {name: '金山词霸', key: 'iciba', data: iciba},
+    ]
 
     return {
         query: queryWords,
@@ -46,10 +48,7 @@ export class TranslateService {
 
   async youdao(queryWords: string) {
     if(!queryWords) {
-        return {
-            status: 200,
-            data: ""
-        };
+        return "";
     }
 
     const API_URL = "http://fanyi.youdao.com/openapi.do";
@@ -75,15 +74,10 @@ export class TranslateService {
             };
         }
 
-        return {
-            status: 200,
-            data: result
-        }
+        return result
     } catch (error) {
-        return {
-            status: error.status || 500,
-            data: error
-        }
+        console.error(error)
+        return ""
     }
   }
 
@@ -91,12 +85,8 @@ export class TranslateService {
     const API_URL = "http://fanyi.sogou.com/reventondc/api/sogouTranslate";
 
     if(!queryWords) {
-        return {
-            status: 200,
-            data: ""
-        };
+        return "";
     }
-    console.log(queryWords)
     
     const params = {
         q: queryWords,
@@ -115,15 +105,10 @@ export class TranslateService {
                             .set('Content-Type', 'application/x-www-form-urlencoded;')
                             .set('accept', 'application/json')
                             .query(params);
-        return {
-            status: 200,
-            data: res.body.errorCode == 0 ? res.body.translation : ""
-        }
+        return res.body.errorCode == 0 ? res.body.translation : ""
     } catch (error) {
-        return {
-            status: error.status || 500,
-            data: error
-        }
+        console.error(error)
+        return ""
     }
   }
 
@@ -154,15 +139,10 @@ export class TranslateService {
                             .set('Content-Type', 'application/x-www-form-urlencoded;')
                             .set('accept', 'application/json')
                             .query(params);
-        return {
-            status: 200,
-            data: res.body.trans_result[0].dst
-        }
+        return res.body.trans_result[0].dst
     } catch (error) {
-        return {
-            status: error.status || 500,
-            data: error
-        }
+        console.error(error)
+        return ""
     }
   }
 
@@ -186,15 +166,10 @@ export class TranslateService {
         const res = await superagent
                             .get(API_URL)
                             .query(params);
-        return {
-            status: 200,
-            data: JSON.parse(res.text).symbols[0] || ""
-        }
+        return JSON.parse(res.text).symbols[0] || ""
     } catch (error) {
-        return {
-            status: error.status || 500,
-            data: error
-        }
+        console.error(error)
+        return ""
     }
   }
 }
