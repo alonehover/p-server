@@ -168,9 +168,12 @@ export class TranslateService {
                             .get(API_URL)
                             .query(params);
         const trans = JSON.parse(res.text).symbols[0];
+        console.log(trans.parts)
         return {
             pinyin: trans.word_symbol,
-            basic: trans.parts[0].means.map(item => item.word_mean)
+            basic: trans.parts[0].means.map(item => {
+                return hasChinese(queryWords) ? item.word_mean : item
+            })
         }
     } catch (error) {
         console.error(error)
