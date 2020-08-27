@@ -105,7 +105,9 @@ export class TranslateService {
                             .set('Content-Type', 'application/x-www-form-urlencoded;')
                             .set('accept', 'application/json')
                             .query(params);
-        return res.body.errorCode == 0 ? res.body.translation : ""
+        return {
+            translation: res.body.errorCode == 0 ? res.body.translation : ""
+        }
     } catch (error) {
         console.error(error)
         return ""
@@ -116,10 +118,7 @@ export class TranslateService {
     const API_URL = "http://api.fanyi.baidu.com/api/trans/vip/translate";
 
     if(!queryWords) {
-        return {
-            status: 200,
-            data: ""
-        };
+        return "";
     }
     
     const params = {
@@ -139,7 +138,9 @@ export class TranslateService {
                             .set('Content-Type', 'application/x-www-form-urlencoded;')
                             .set('accept', 'application/json')
                             .query(params);
-        return res.body.trans_result[0].dst
+        return {
+            translation: res.body.trans_result[0].dst
+        }
     } catch (error) {
         console.error(error)
         return ""
@@ -166,7 +167,11 @@ export class TranslateService {
         const res = await superagent
                             .get(API_URL)
                             .query(params);
-        return JSON.parse(res.text).symbols[0] || ""
+        const trans = JSON.parse(res.text).symbols[0];
+        return {
+            pinyin: trans.word_symbol,
+            basic: trans.parts[0].means.map(item => item.word_mean)
+        }
     } catch (error) {
         console.error(error)
         return ""
