@@ -7,16 +7,14 @@ export class PasteController  {
 
     // 获取列表
     @Get('/get')
-    getValue(): Promise<String> {
-        const data = this.PasteService.get('paste');
-        console.log(data)
-        return this.PasteService.get('paste');
+    async getValue(): Promise<String> {
+        const data = await this.PasteService.get('paste');
+        return data;
     }
 
     @Post('/set')
-    setValue(@Body() req: any): Boolean {
-        console.log(req)
-        this.PasteService.set('paste', req.data);
+    async setValue(@Body() req: any): Promise<Boolean> {
+        await this.PasteService.set('paste', req.words);
         return true;
     }
 }
