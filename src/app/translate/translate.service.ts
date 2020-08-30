@@ -175,9 +175,9 @@ export class TranslateService {
 
             return {
                 pinyin: trans.word_symbol,
-                basic: trans.parts[0].means.map(item => {
+                basic: trans.parts ? trans.parts[0].means.map(item => {
                     return hasChinese(queryWords) ? item.word_mean : item
-                })
+                }) : ''
             }
         } catch (error) {
             console.error(error)
