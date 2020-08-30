@@ -172,6 +172,10 @@ export class TranslateService {
                 .get(API_URL)
                 .query(params);
             const trans = JSON.parse(res.text).symbols[0];
+            
+            if(!trans.word_symbol && !trans.parts) {
+                return ''
+            }
 
             return {
                 pinyin: trans.word_symbol,
